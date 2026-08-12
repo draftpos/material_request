@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_material_requisition_root"
+              name="Requisition"
+              web_icon="material_requisition,static/description/icon.png"
+              sequence="10"/>
+
+    <menuitem id="menu_action_menu"
+              name="Action Menu"
+              parent="menu_material_requisition_root"
+              sequence="10"/>
+
+    <menuitem id="menu_material_requisition"
+              name="Requisitions"
+              parent="menu_action_menu"
+              action="action_material_requisition"
+              sequence="10"/>
+
+    <menuitem id="menu_custom_rfq"
+              name="RFQs"
+              parent="menu_action_menu"
+              action="action_custom_rfq"
+              sequence="15"/>
+
+    <menuitem id="menu_custom_supplier_quote"
+              name="Supplier Quotes"
+              parent="menu_action_menu"
+              action="action_custom_supplier_quote"
+              sequence="20"/>
+              
+    <menuitem id="menu_custom_purchase_order"
+              name="Purchase Orders"
+              parent="menu_action_menu"
+              action="action_custom_purchase_order"
+              sequence="30"/>
+              
+    <menuitem id="menu_custom_purchase_invoice"
+              name="Purchase Invoices"
+              parent="menu_action_menu"
+              action="action_custom_purchase_invoice"
+              sequence="40"/>
+              
+    <menuitem id="menu_custom_grv"
+              name="GRVs"
+              parent="menu_action_menu"
+              action="action_custom_grv"
+              sequence="50"/>
+</odoo>

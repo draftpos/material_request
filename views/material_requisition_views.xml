@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_material_requisition_form" model="ir.ui.view">
+        <field name="name">material.requisition.form</field>
+        <field name="model">material.requisition</field>
+        <field name="arch" type="xml">
+            <form string="Requisition">
+                <header>
+                    <button name="action_submit" string="Submit" type="object" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_create_rfq" string="Create RFQ" type="object" invisible="state != 'approved'" class="oe_highlight"/>
+                    <button name="action_approve" string="Approve" type="object" invisible="state != 'pending'" class="oe_highlight"/>
+                    <button name="action_reject" string="Reject" type="object" invisible="state != 'pending'"/>
+                                                                                                    <button name="action_cancel" string="Cancel" type="object" invisible="state not in ('draft','pending','approved')"/>
+                    <button name="action_draft" string="Set to Draft" type="object" invisible="state != 'cancel'"/>
+                    <button name="action_done" string="Mark as Done" type="object" invisible="state not in ('approved', 'po')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,approved,rfq,quote_sent,po,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_rfqs" type="object" class="oe_stat_button" icon="fa-credit-card" invisible="rfq_count == 0">
+                            <field name="rfq_count" widget="statinfo" string="RFQs/POs"/>
+                        </button>
+                        <button name="action_view_invoices" type="object" class="oe_stat_button" icon="fa-pencil-square-o" invisible="invoice_count == 0">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                        <button name="action_view_pickings" type="object" class="oe_stat_button" icon="fa-truck" invisible="picking_count == 0">
+                            <field name="picking_count" widget="statinfo" string="Receipts"/>
+                        </button>
+                    </div>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                                                        <field name="purpose"/>
+                            <field name="requested_by_id" readonly="1" widget="badge" decoration-warning="1"/>
+                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_requisition.group_material_requisition_approver)d)]" required="1"/>
+                            <field name="vendor_id" placeholder="Name, TIN, Email, or Reference"/>
+                        </group>
+                        <group>
+                            <field name="order_deadline" decoration-success="1"/>
+                            <field name="transaction_date"/>
+                            <field name="approved_by_id" readonly="1" widget="badge" decoration-info="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="line_ids" widget="section_and_note_one2many" mode="list">
+                                <list editable="bottom" string="Requisition Lines">
+                                    <control>
+                                        <create name="add_product_control" string="Add a product"/>
+                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+                                    <field name="display_type" column_invisible="True"/>
+                                    <field name="product_id" readonly="display_type in ('line_section', 'line_note')"/>
+                                    <field name="name" widget="section_and_note_text" optional="hide"/>
+                                    <field name="date_planned" optional="hide"/>
+                                    <field name="propagate_cancel" optional="hide"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom_id" groups="uom.group_uom" optional="show"/>
+                                    <field name="price_unit" optional="hide"/>
+                                    <field name="taxes_id" widget="many2many_tags" optional="hide"/>
+                                    <field name="discount" optional="hide"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="warehouse_id" optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <group>
+                                <group>
+                                    <field name="notes" nolabel="1" placeholder="Define your terms and conditions ..."/>
+                                </group>
+                                <group class="oe_subtotal_footer oe_right">
+                                    <label for="amount_untaxed" style="font-weight: 900; font-size: 1.2em; color: black;"/>
+                                    <field name="amount_untaxed" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}" style="font-weight: 900; font-size: 1.2em; color: black;"/>
+                                    
+                                    <label for="amount_tax" style="font-weight: 900; font-size: 1.2em; color: black;"/>
+                                    <field name="amount_tax" nolabel="1" widget="monetary" options="{'currency_field': 'currency_id'}" style="font-weight: 900; font-size: 1.2em; color: black;"/>
+                                    
+                                    <div class="oe_subtotal_footer_separator oe_inline">
+                                        <label for="amount_total" style="font-weight: 900; font-size: 1.5em; color: black;"/>
+                                    </div>
+                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}" style="font-weight: 900; font-size: 1.5em; color: black;"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_material_requisition_tree" model="ir.ui.view">
+        <field name="name">material.requisition.list</field>
+        <field name="model">material.requisition</field>
+        <field name="arch" type="xml">
+            <list string="Requisitions">
+                <field name="name"/>
+                <field name="transaction_date"/>
+                <field name="order_deadline"/>
+                <field name="purpose"/>
+                <field name="requested_by_id"/>
+                <field name="list_state" string="Status"/>
+                <field name="state" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_material_requisition" model="ir.actions.act_window">
+        <field name="name">Requisitions</field>
+        <field name="res_model">material.requisition</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <record id="view_material_requisition_search" model="ir.ui.view">
+        <field name="name">material.requisition.search</field>
+        <field name="model">material.requisition</field>
+        <field name="arch" type="xml">
+            <search string="Search">
+                <field name="name" string="Reference"/>
+<field name="transaction_date" string="Date"/>
+<field name="create_uid" string="Created By"/>
+<field name="purpose" string="Purpose"/>
+<field name="state" string="Status"/>
+<field name="order_deadline" string="Deadline Date"/>
+<field name="vendor_id" string="Supplier"/>
+<field name="requested_by_id" string="Requested By"/>
+<field name="approved_by_id" string="Approved By"/>
+                <separator/>
+                <filter string="Date" name="filter_transaction_date" date="transaction_date"/>
+<filter string="My Created" name="my_created" domain="[('create_uid', '=', uid)]"/>
+<filter string="Purpose: Purchase" name="purpose_purchase" domain="[('purpose', '=', 'Purchase')]"/>
+<filter string="Purpose: Internal" name="purpose_internal" domain="[('purpose', '=', 'Internal')]"/>
+<filter string="Deadline Date" name="filter_order_deadline" date="order_deadline"/>
+<filter string="My Requests" name="my_requested" domain="[('requested_by_id', '=', uid)]"/>
+<filter string="My Approvals" name="my_approved" domain="[('approved_by_id', '=', uid)]"/>
+<separator/>
+<filter string="Draft" name="state_draft" domain="[('state', '=', 'draft')]"/>
+<filter string="Approved" name="state_approved" domain="[('state', '=', 'approved')]"/>
+                <group>
+                    <filter string="Date" name="group_transaction_date" context="{'group_by': 'transaction_date'}"/>
+<filter string="Created By" name="group_create_uid" context="{'group_by': 'create_uid'}"/>
+<filter string="Purpose" name="group_purpose" context="{'group_by': 'purpose'}"/>
+<filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+<filter string="Deadline Date" name="group_order_deadline" context="{'group_by': 'order_deadline'}"/>
+<filter string="Supplier" name="group_vendor_id" context="{'group_by': 'vendor_id'}"/>
+<filter string="Requested By" name="group_requested_by_id" context="{'group_by': 'requested_by_id'}"/>
+<filter string="Approved By" name="group_approved_by_id" context="{'group_by': 'approved_by_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

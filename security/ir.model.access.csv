@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_material_requisition,material.requisition,model_material_requisition,base.group_user,1,1,1,1
+access_material_requisition_line,material.requisition.line,model_material_requisition_line,base.group_user,1,1,1,1
+access_wizard_create_rfq,wizard.create.rfq,model_wizard_create_rfq,base.group_user,1,1,1,1
+access_custom_po,custom.purchase.order,model_custom_purchase_order,base.group_user,1,1,1,1
+access_custom_po_line,custom.purchase.order.line,model_custom_purchase_order_line,base.group_user,1,1,1,1
+access_custom_pi,custom.purchase.invoice,model_custom_purchase_invoice,base.group_user,1,1,1,1
+access_custom_pi_line,custom.purchase.invoice.line,model_custom_purchase_invoice_line,base.group_user,1,1,1,1
+access_custom_sq,custom.supplier.quote,model_custom_supplier_quote,base.group_user,1,1,1,1
+access_custom_sq_line,custom.supplier.quote.line,model_custom_supplier_quote_line,base.group_user,1,1,1,1
+access_custom_grv,custom.grv,model_custom_grv,base.group_user,1,1,1,1
+access_custom_grv_line,custom.grv.line,model_custom_grv_line,base.group_user,1,1,1,1
+access_custom_rfq,custom.rfq,model_custom_rfq,base.group_user,1,1,1,1
+access_custom_rfq_line,custom.rfq.line,model_custom_rfq_line,base.group_user,1,1,1,1
+access_custom_rfq_supplier,access_custom_rfq_supplier,material_requisition.model_custom_rfq_supplier,base.group_user,1,1,1,1
+access_wizard_create_supplier_quote,wizard.create.supplier.quote,model_wizard_create_supplier_quote,base.group_user,1,1,1,1

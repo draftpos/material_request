@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="seq_material_requisition" model="ir.sequence">
+            <field name="name">Material Requisition</field>
+            <field name="code">material.requisition</field>
+            <field name="prefix">MR-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_custom_rfq" model="ir.sequence">
+            <field name="name">RFQ</field>
+            <field name="code">custom.rfq</field>
+            <field name="prefix">RFQ-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_custom_purchase_order" model="ir.sequence">
+            <field name="name">Purchase Order</field>
+            <field name="code">custom.purchase.order</field>
+            <field name="prefix">PO-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_custom_purchase_invoice" model="ir.sequence">
+            <field name="name">Purchase Invoice</field>
+            <field name="code">custom.purchase.invoice</field>
+            <field name="prefix">PI-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_custom_supplier_quote" model="ir.sequence">
+            <field name="name">Supplier Quote</field>
+            <field name="code">custom.supplier.quote</field>
+            <field name="prefix">SQ-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_custom_grv" model="ir.sequence">
+            <field name="name">GRV</field>
+            <field name="code">custom.grv</field>
+            <field name="prefix">GRV-</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

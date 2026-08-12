@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_material_requisition_approver" model="res.groups">
+        <field name="name">Material Requisition Approvers</field>
+    </record>
+    <record id="group_rfq_approver" model="res.groups">
+        <field name="name">RFQ Approvers</field>
+    </record>
+    <record id="group_custom_purchase_order_approver" model="res.groups">
+        <field name="name">Purchase Order Approvers</field>
+    </record>
+    <record id="group_custom_purchase_invoice_approver" model="res.groups">
+        <field name="name">Purchase Invoice Approvers</field>
+    </record>
+    <record id="group_custom_supplier_quote_approver" model="res.groups">
+        <field name="name">Supplier Quote Approvers</field>
+    </record>
+    <record id="group_custom_grv_approver" model="res.groups">
+        <field name="name">GRV Approvers</field>
+    </record>
+</odoo>
