@@ -38,9 +38,11 @@
                         <group>
                             <field name="vendor_id"/>
                             <field name="purpose"/>
+                            <field name="receipt_type"/>
+                            <field name="partial_reason" invisible="receipt_type != 'partial'" required="receipt_type == 'partial'" placeholder="Why is this a partial receipt?"/>
                             <field name="approved_by_id" readonly="1" widget="badge" decoration-success="1"/>
                             <field name="purchase_invoice_id" readonly="1"/>
-                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_requisition.group_custom_grv_approver)d)]" required="1"/>
+                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_request.group_custom_grv_approver)d)]" required="1"/>
                         </group>
                         <group>
                             <field name="order_deadline" decoration-success="1"/>
@@ -54,6 +56,7 @@
                                 <list editable="bottom">
                                     <field name="product_id"/>
                                     <field name="name"/>
+                                    <field name="demand_qty" readonly="1"/>
                                     <field name="product_qty"/>
                                     <field name="product_uom_id"/>
                                     <field name="price_unit"/>
