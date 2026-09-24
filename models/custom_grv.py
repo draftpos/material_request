@@ -4,7 +4,7 @@ from odoo import models, fields, api, _
 class CustomGrv(models.Model):
 
     def _default_request_to_ids(self):
-        group = self.env.ref('material_requisition.group_custom_grv_approver', raise_if_not_found=False)
+        group = self.env.ref('material_request.group_custom_grv_approver', raise_if_not_found=False)
         if group:
             return group.user_ids.ids
         return []
@@ -22,6 +22,9 @@ class CustomGrv(models.Model):
     transaction_date = fields.Datetime(string='Transaction Date', default=fields.Datetime.now, tracking=True)
     approved_by_id = fields.Many2one('res.users', string='Approved By', tracking=True)
     purchase_invoice_id = fields.Many2one('custom.purchase.invoice', string='Invoice Reference', readonly=True)
+    
+    receipt_type = fields.Selection([('full', 'Full Receipt'), ('partial', 'Partial Receipt')], string='Receipt Type', default='full', required=True, tracking=True)
+    partial_reason = fields.Text(string='Reason for Partial Receipt', tracking=True)
     
     state = fields.Selection([
         ('draft', 'DRAFT'),
@@ -58,29 +61,86 @@ class CustomGrv(models.Model):
             rec.state = 'rejected'
 
     def action_confirm(self):
+        from odoo.exceptions import UserError
         for rec in self:
+            if rec.receipt_type == 'partial' and not rec.partial_reason:
+                raise UserError(_("Please provide a Reason for Partial Receipt."))
+            if rec.receipt_type == 'full':
+                if any(line.product_qty < line.demand_qty for line in rec.line_ids):
+                    raise UserError(_("You selected 'Full Receipt', but some quantities are less than the original demand. Please select 'Partial Receipt' instead or correct the quantities."))
+            
             rec.state = 'done'
             
-            # Find the standard picking from the PO and validate it
-            if not rec.standard_picking_id and rec.purchase_invoice_id and rec.purchase_invoice_id.purchase_order_id:
-                std_po = rec.purchase_invoice_id.purchase_order_id.standard_po_id
-                if std_po:
-                    # Find a receipt that is ready to be processed
-                    picking = std_po.picking_ids.filtered(lambda p: p.state not in ['done', 'cancel'])
-                    if picking:
-                        picking = picking[0]
-                        rec.standard_picking_id = picking.id
-                        
-                        # Map quantities
-                        for grv_line in rec.line_ids:
-                            # Find matching move line in standard picking
-                            for move in picking.move_ids:
-                                if move.product_id == grv_line.product_id and move.state not in ['done', 'cancel']:
-                                    move.quantity = grv_line.product_qty
-                                    break
-                        
-                        # Validate the picking
-                        picking.button_validate()
+            # Find the material requisition linked to this GRV
+            requisition = self.env['material.requisition'].search([('picking_ids', 'in', rec.id)], limit=1)
+            
+            # Handle Partial Receipt by creating a backorder GRV for the remaining balance
+            if rec.receipt_type == 'partial':
+                backorder_lines = []
+                for line in rec.line_ids:
+                    if line.product_qty < line.demand_qty:
+                        backorder_qty = line.demand_qty - line.product_qty
+                        backorder_lines.append((0, 0, {
+                            'product_id': line.product_id.id,
+                            'name': line.name,
+                            'demand_qty': backorder_qty,
+                            'product_qty': backorder_qty,
+                            'product_uom_id': line.product_uom_id.id,
+                            'price_unit': line.price_unit,
+                            'taxes_id': [(6, 0, line.taxes_id.ids)] if line.taxes_id else False,
+                            'discount': line.discount,
+                        }))
+                
+                if backorder_lines:
+                    backorder_vals = {
+                        'vendor_id': rec.vendor_id.id,
+                        'purpose': rec.purpose,
+                        'requested_by_id': rec.requested_by_id.id,
+                        'request_to_ids': [(6, 0, rec.request_to_ids.ids)] if rec.request_to_ids else False,
+                        'order_deadline': rec.order_deadline,
+                        'transaction_date': rec.transaction_date,
+                        'approved_by_id': rec.approved_by_id.id,
+                        'currency_id': rec.currency_id.id,
+                        'company_id': rec.company_id.id,
+                        'notes': rec.notes,
+                        'line_ids': backorder_lines,
+                        'receipt_type': 'full',
+                    }
+                    backorder = self.env['custom.grv'].create(backorder_vals)
+                    if requisition:
+                        requisition.write({'picking_ids': [(4, backorder.id)]})
+
+            # Auto-generate Custom Purchase Invoice for the received items
+            inv_vals = {
+                'vendor_id': rec.vendor_id.id,
+                'transaction_date': fields.Datetime.now(),
+                'line_ids': [],
+                'state': 'draft',
+            }
+            if requisition:
+                # Assuming the requisition is linked to a standard PO
+                po = self.env['purchase.order'].search([('material_requisition_id', '=', requisition.id)], limit=1)
+                if po:
+                    inv_vals['purchase_order_id'] = po.id
+
+            for line in rec.line_ids:
+                if line.product_qty > 0:
+                    inv_vals['line_ids'].append((0, 0, {
+                        'product_id': line.product_id.id,
+                        'name': line.name,
+                        'product_qty': line.product_qty,
+                        'product_uom_id': line.product_uom_id.id,
+                        'price_unit': line.price_unit,
+                    }))
+                    
+            if inv_vals['line_ids']:
+                invoice = self.env['custom.purchase.invoice'].create(inv_vals)
+                rec.purchase_invoice_id = invoice.id
+                if requisition:
+                    requisition.write({'invoice_ids': [(4, invoice.id)]})
+                    
+            # We skip the standard picking validation for now because we use standard pickings only for Odoo inventory
+            # If standard picking needs to be validated, it should be done using the standard receipt.
 
     def action_cancel(self):
         for rec in self:
@@ -115,6 +175,7 @@ class CustomGrvLine(models.Model):
     document_id = fields.Many2one('custom.grv', string='Document Reference', required=True, ondelete='cascade', index=True, copy=False)
     product_id = fields.Many2one('product.product', string='Product', required=True)
     name = fields.Text(string='Description', required=True)
+    demand_qty = fields.Float(string='Original Demand', digits='Product Unit of Measure', readonly=True)
     product_qty = fields.Float(string='Quantity', digits='Product Unit of Measure', required=True, default=1.0)
     product_uom_id = fields.Many2one('uom.uom', string='UOM')
     price_unit = fields.Float(string='Unit Price', required=True, digits='Product Price')

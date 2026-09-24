@@ -30,7 +30,7 @@
                     <button name="action_reject" string="Reject" type="object" class="btn-danger" invisible="state != 'pending_approval'"/>
                     <button name="action_confirm" string="Confirm RFQ" type="object" class="oe_highlight" invisible="state != 'approved'"/>
                     <field name="all_quotes_created" invisible="1"/>
-                    <button name="%(material_requisition.action_wizard_create_supplier_quote)d" string="Create Supplier Quote" type="action" class="oe_highlight" invisible="state != 'rfq_sent' or all_quotes_created"/>
+                    <button name="%(material_request.action_wizard_create_supplier_quote)d" string="Create Supplier Quote" type="action" class="oe_highlight" invisible="state != 'rfq_sent' or all_quotes_created"/>
                     <button name="action_cancel" string="Cancel" type="object" invisible="state in ('rfq_sent', 'done', 'cancel', 'rejected')"/>
                     <field name="state" widget="statusbar" statusbar_visible="rfq,pending_approval,approved,rfq_sent,done"/>
                 </header>
@@ -42,7 +42,7 @@
                         <group>
                             <field name="transaction_date"/>
                             <field name="requested_by_id" readonly="1" widget="badge" decoration-warning="1"/>
-                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_requisition.group_rfq_approver)d)]" required="1"/>
+                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_request.group_rfq_approver)d)]" required="1"/>
                         </group>
                         <group>
                             <field name="order_deadline" decoration-success="1"/>

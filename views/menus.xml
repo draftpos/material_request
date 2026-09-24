@@ -2,7 +2,7 @@
 <odoo>
     <menuitem id="menu_material_requisition_root"
               name="Requisition"
-              web_icon="material_requisition,static/description/icon.png"
+              web_icon="material_request,static/description/icon.png"
               sequence="10"/>
 
     <menuitem id="menu_action_menu"

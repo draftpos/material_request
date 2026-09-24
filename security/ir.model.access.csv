@@ -12,5 +12,5 @@ access_custom_grv,custom.grv,model_custom_grv,base.group_user,1,1,1,1
 access_custom_grv_line,custom.grv.line,model_custom_grv_line,base.group_user,1,1,1,1
 access_custom_rfq,custom.rfq,model_custom_rfq,base.group_user,1,1,1,1
 access_custom_rfq_line,custom.rfq.line,model_custom_rfq_line,base.group_user,1,1,1,1
-access_custom_rfq_supplier,access_custom_rfq_supplier,material_requisition.model_custom_rfq_supplier,base.group_user,1,1,1,1
+access_custom_rfq_supplier,access_custom_rfq_supplier,model_custom_rfq_supplier,base.group_user,1,1,1,1
 access_wizard_create_supplier_quote,wizard.create.supplier.quote,model_wizard_create_supplier_quote,base.group_user,1,1,1,1

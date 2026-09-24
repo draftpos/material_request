@@ -37,7 +37,7 @@
                         <group>
                                                         <field name="purpose"/>
                             <field name="requested_by_id" readonly="1" widget="badge" decoration-warning="1"/>
-                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_requisition.group_material_requisition_approver)d)]" required="1"/>
+                            <field name="request_to_ids" widget="many2many_tags" options="{'color_field': 'color'}" domain="[('group_ids', 'in', %(material_request.group_material_requisition_approver)d)]" required="1"/>
                             <field name="vendor_id" placeholder="Name, TIN, Email, or Reference"/>
                         </group>
                         <group>
