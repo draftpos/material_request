@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 class MaterialRequisition(models.Model):
 
     def _default_request_to_ids(self):
-        group = self.env.ref('material_requisition.group_material_requisition_approver', raise_if_not_found=False)
+        group = self.env.ref('material_request.group_material_requisition_approver', raise_if_not_found=False)
         if group:
             return group.user_ids.ids
         return []
@@ -250,6 +250,7 @@ class MaterialRequisition(models.Model):
             grv_vals['line_ids'].append((0, 0, {
                 'name': line.product_id.name,
                 'product_id': line.product_id.id,
+                'demand_qty': line.product_qty,
                 'product_qty': line.product_qty,
                 'product_uom_id': line.product_uom_id.id,
                 'price_unit': line.price_unit,
