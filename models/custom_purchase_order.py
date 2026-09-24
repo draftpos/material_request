@@ -4,7 +4,7 @@ from odoo import models, fields, api, _
 class CustomPurchaseOrder(models.Model):
 
     def _default_request_to_ids(self):
-        group = self.env.ref('material_requisition.group_custom_purchase_order_approver', raise_if_not_found=False)
+        group = self.env.ref('material_request.group_custom_purchase_order_approver', raise_if_not_found=False)
         if group:
             return group.user_ids.ids
         return []
